@@ -1,0 +1,299 @@
+<!--
+This is a prototype only
+
+Roadmap:
+  - Template got from: https://getbootstrap.com/docs/3.3/getting-started/
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alg. Dekker</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/highlight/styles/idea.css">
+
+    <style>
+      div.content-main {margin: 1em 0em 0em 0em;}
+      span.line.line-cur {background-color: #fcfc92;}
+      span.line.line-cur.info {background-color: #84ffea;}
+
+      @media (max-width: 720px) {
+        #btn-ui-expand {display: none;}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content-main">
+      <div class="container">
+        <div id="content-main-window" class="col-md-6 col-md-offset-3">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <span id="btn-ui-expand" class="pull-right glyphicon glyphicon-resize-full"></span>
+                <h3>Algorítmo de Dekker
+                </h3>
+              <table class="table">
+                <tr>
+                  <th style="width: 50%">Variável</th>
+                  <th style="width: 50%">Valor</th>
+                </tr>
+                <tr>
+                  <td>flag</td><td>[ <span id="var-flag-0">false</span> , <span id="var-flag-1">false</span> ]</td>
+                </tr>
+                <tr>
+                  <td>vez</td><td id="var-turn"></td>
+                </tr>
+              </table>
+              <div id="btn-step-wrap" class="hidden">
+                <span class="pull-right">
+                  <button class="btn btn-success">Step</button>
+                </span>
+              </div>
+              <!-- editor contendo processo 1 -->
+              <div class="row">
+                <div class="editor editor-wrap col-md-12">
+                  <center><strong>Processo 1</strong></center>
+                  <pre id="editor-1">
+<code class="c">
+<span class="line"><span>0</span>  while (true)</span>
+<span class="line"><span>1</span>  {</span>
+<span class="line"><span>2</span>      flag[i] = true;</span>
+<span class="line"><span>3</span>      while (flag[j] != false)</span>
+<span class="line"><span>4</span>      {</span>
+<span class="line"><span>5</span>          if (vez == j) {</span>
+<span class="line"><span>6</span>              flag[i] = false;</span>
+<span class="line"><span>7</span>              while (vez == j){ }</span>
+<span class="line"><span>8</span>              flag[i] = true;</span>
+<span class="line"><span>9</span>          }</span>
+<span class="line"><span>10</span>      }</span>
+<span class="line info"><span>11</span>      secao_critica();</span>
+<span class="line"><span>12</span>      vez = j;</span>
+<span class="line"><span>13</span>      flag[i] = false;</span>
+<span class="line"><span>14</span>  }</span>
+                  </code>
+                </pre>
+                </div>
+                <div class="editor editor-wrap col-md-12">
+                  <!-- editor contendo processo 2 -->
+                  <center><strong>Processo 2</strong></center>
+<pre id="editor-2">
+<code class="c">
+<span class="line"><span>0</span>  while (true)</span>
+<span class="line"><span>1</span>  {</span>
+<span class="line"><span>2</span>      flag[i] = true;</span>
+<span class="line"><span>3</span>      while (flag[j] != false)</span>
+<span class="line"><span>4</span>      {</span>
+<span class="line"><span>5</span>          if (vez == j) {</span>
+<span class="line"><span>6</span>              flag[i] = false;</span>
+<span class="line"><span>7</span>              while (vez == j){ }</span>
+<span class="line"><span>8</span>              flag[i] = true;</span>
+<span class="line"><span>9</span>          }</span>
+<span class="line"><span>10</span>      }</span>
+<span class="line info"><span>11</span>      secao_critica();</span>
+<span class="line"><span>12</span>      vez = j;</span>
+<span class="line"><span>13</span>      flag[i] = false;</span>
+<span class="line"><span>14</span>  }</span>
+                  </code>
+                </pre>
+                </div>
+              </div>
+              <!-- summary -->
+              <ul id="summary">
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="static/highlight/highlight.pack.js"></script>
+    <script>
+      $(document).ready(function(){
+
+        var cedit = {
+          // code editor
+          l_color: {
+            last_assgined: '',
+          },
+          c_line_el: [null, null],
+          root_el: [$('#editor-1'), $('#editor-2')],
+
+          set_current_line: function(root_id, line_no){
+            var c_line_el = this.c_line_el[root_id];
+            if (c_line_el != null){
+              $(c_line_el).removeClass('line-cur');
+
+            }
+            cur_lo = $(cedit.root_el[root_id]).find('span:nth-child(' + (line_no + 1) + ')');
+            cur_lo.addClass('line-cur');
+            this.c_line_el[root_id] = cur_lo;
+          },
+          set_line_color: function(root_id, color_class){
+            var c_line_el = this.c_line_el[root_id];
+            if (c_line_el != null){
+              c_line_el.removeClass(this.l_color.last_assgined);
+              c_line_el.addClass(color_class);
+            }
+
+          }
+        }
+
+        var alg = {
+          cur_proc: 0,
+          proc_vars: [
+            {i: 0, j: 1},
+            {i: 1, j: 0},
+          ],
+          flag: [false, false],
+          turn: 0,
+          engine: null,
+
+          set_turn: function(val){
+            alg.turn = val;
+            $('#var-turn').text(
+              'Processo ' + (val + 1)
+            );
+          },
+          set_flag: function(id, val){
+            alg.flag[id] = val;
+            $('#var-flag-' + id).text(
+              val ? 'true' : 'false'
+            );
+          },
+          get_var: function(var_name){
+            var mem = alg.proc_vars[alg.cur_proc];
+            return mem[var_name];
+          },
+          2: function(){alg.set_flag(alg.cur_proc, true);},
+          3: function(){
+            var j = alg.get_var('j');
+            // the default behavior is go to the next line
+            if (alg.flag[j] != false){} else {
+              // else it will jump
+              alg.engine.jump(11);
+            }
+          },
+          5: function(){
+            if (alg.turn == alg.get_var('j')){
+              // continue
+            } else {
+              alg.engine.jump(3);
+            }
+          },
+          6: function(){
+            alg.set_flag(alg.get_var('i'), false);
+          },
+          7: function(){
+            if (alg.turn == alg.get_var('j')){
+              alg.engine.jump(7);
+            }
+          },
+          8: function(){
+            alg.set_flag(alg.get_var('i'), true);
+          },
+          11: function(){
+          },
+          12: function(){
+            alg.set_turn(alg.get_var('j'));
+          },
+          13: function(){
+            alg.set_flag(alg.get_var('i'), false);
+          }
+        }
+
+        var smac = {
+          proc_mem: [
+            {cur_lno: -1},
+            {cur_lno: -1}
+          ],
+          cur_proc: 0,
+          cur_ed: null,
+          line_count: 15,
+          stepped: true,
+          // state machine
+          step: function(){
+
+            var cur_lno = (smac.proc_mem[smac.cur_proc].cur_lno + 1) % smac.line_count;
+
+            cedit.set_current_line(smac.cur_proc, cur_lno);
+            smac.proc_mem[smac.cur_proc].cur_lno = cur_lno;
+
+            if (alg[cur_lno] == undefined){
+                setTimeout(smac.step, 0);
+            } else {
+              alg[cur_lno]();
+              if (! smac.stepped){
+                setTimeout(smac.step, 500);
+              }
+              if (Math.random() > 0.5){
+                // will activate quantumm
+                alg.cur_proc = smac.cur_proc = 1 - smac.cur_proc;
+              }
+            }            
+          },
+          jump: function(line){
+            smac.proc_mem[smac.cur_proc].cur_lno = line - 1;
+          },
+          color: function(c){
+            cedit.set_line_color(smac.cur_proc, c);
+          },
+          init: function(){
+            if (! smac.stepped){
+              smac.step();
+            }
+            alg.engine = smac;
+            alg.set_turn(alg.turn);
+          }
+        }
+
+        $('pre code.c').each(function(){
+          hljs.highlightBlock(this);
+        });
+
+        var ui = {
+          is_expanded: false,
+          editor_c: 2,
+          editors_wrap: null,
+
+          bind_editors: function(){
+            var ed = [];
+            for(id = 0; id < ui.editor_c; id ++){
+              ed.push($('ed-wrapper-' + id));
+            }
+          }
+
+        }
+
+        $('#btn-ui-expand').on('click', function(){
+          if (ui.is_expanded){
+            $('div.editor.editor-wrap').each(function(){
+              $(this).removeClass('col-md-6');
+              $(this).addClass('col-md-12');
+            });
+            $('#content-main-window').attr('class', 'col-md-6 col-md-offset-3');
+          } else {
+            $('div.editor.editor-wrap').each(function(){
+              $(this).removeClass('col-md-12');
+              $(this).addClass('col-md-6');
+            });
+            $('#content-main-window').attr('class', 'col-md-12');  
+          }
+          ui.is_expanded = ! ui.is_expanded;
+        });
+
+        if (smac.stepped){
+          btn = $('#btn-step-wrap');
+          btn.removeClass('hidden');
+          btn.on('click', smac.step);
+        }
+
+        smac.cur_ed = cedit;
+        smac.init();
+
+      });
+    </script>
+  </body>
+</html>
