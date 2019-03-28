@@ -38,8 +38,8 @@ Roadmap:
           <div class="panel panel-default">
             <div class="panel-body">
               <span id="btn-ui-expand" class="pull-right glyphicon glyphicon-resize-full"></span>
-                <h3>Algorítmo de Dekker
-                </h3>
+              <h3>Algorítmo de Dekker</h3>
+
               <table class="table">
                 <tr>
                   <th style="width: 50%">Variável</th>
@@ -119,8 +119,9 @@ Roadmap:
     <script>
       $(document).ready(function(){
 
+        // UI of code editor
         var cedit = {
-          // code editor
+
           c_line_el: [null, null],
           root_el: [$('#editor-1'), $('#editor-2')],
 
@@ -133,6 +134,12 @@ Roadmap:
             cur_lo = $(cedit.root_el[root_id]).find('span:nth-child(' + (line_no + 1) + ')');
             cur_lo.addClass('line-cur');
             this.c_line_el[root_id] = cur_lo;
+          },
+          init: function(){
+            // for each code wrapper, call highlight.js
+            $('pre code.c').each(function(){
+              hljs.highlightBlock(this);
+            });
           }
         }
 
@@ -268,25 +275,11 @@ Roadmap:
           }
         }
 
-        $('pre code.c').each(function(){
-          hljs.highlightBlock(this);
-        });
-
+        // UI outside editor
         var ui = {
           is_expanded: false,
-          editor_c: 2,
-          editors_wrap: null,
 
-          bind_editors: function(){
-            var ed = [];
-            for(id = 0; id < ui.editor_c; id ++){
-              ed.push($('ed-wrapper-' + id));
-            }
-          }
-
-        }
-
-        $('#btn-ui-expand').on('click', function(){
+          on_expand_click: function(){
           if (ui.is_expanded){
             $('div.editor.editor-wrap').each(function(){
               $(this).removeClass('col-md-6');
@@ -301,7 +294,13 @@ Roadmap:
             $('#content-main-window').attr('class', 'col-md-12');  
           }
           ui.is_expanded = ! ui.is_expanded;
-        });
+          },
+
+          init: function(){
+            // bind btn click
+            $('#btn-ui-expand').on('click', ui.on_expand_click);
+          }
+        }
 
         if (smac.stepped){
           btn = $('#btn-step-wrap');
@@ -309,8 +308,10 @@ Roadmap:
           btn.on('click', smac.step);
         }
 
+        cedit.init();
         smac.cur_ed = cedit;
         smac.init();
+        ui.init();
 
       });
     </script>
