@@ -1,5 +1,7 @@
 <!--
-This is a prototype only
+A aplicação é somente um protótipo
+
+
 
 Roadmap:
   - Template got from: https://getbootstrap.com/docs/3.3/getting-started/
@@ -19,6 +21,10 @@ Roadmap:
       div.content-main {margin: 1em 0em 0em 0em;}
       span.line.line-cur {background-color: #fcfc92;}
       span.line.line-cur.info {background-color: #84ffea;}
+      span.ui.ui-title.active {font-weight: bold;}
+      div.editor.editor-wrap pre.paused {opacity: 0.75;}
+      span.kw.kw-true {color: green;}
+      span.kw.kw-false {color: red;}
 
       @media (max-width: 720px) {
         #btn-ui-expand {display: none;}
@@ -40,13 +46,13 @@ Roadmap:
                   <th style="width: 50%">Valor</th>
                 </tr>
                 <tr>
-                  <td>flag</td><td>[ <span id="var-flag-0">false</span> , <span id="var-flag-1">false</span> ]</td>
+                  <td>flag</td><td>[ <span id="var-flag-0" class="kw kw-false">false</span> , <span id="var-flag-1" class="kw kw-false">false</span> ]</td>
                 </tr>
                 <tr>
                   <td>vez</td><td id="var-turn"></td>
                 </tr>
               </table>
-              <div id="btn-step-wrap" class="hidden">
+              <div id="btn-step-wrap" class="col-md-12 hidden">
                 <span class="pull-right">
                   <button class="btn btn-success">Step</button>
                 </span>
@@ -54,7 +60,7 @@ Roadmap:
               <!-- editor contendo processo 1 -->
               <div class="row">
                 <div class="editor editor-wrap col-md-12">
-                  <center><strong>Processo 1</strong></center>
+                  <center><span id="title-proc-1" class="ui ui-title">Processo 1</span></center>
                   <pre id="editor-1">
 <code class="c">
 <span class="line"><span>0</span>  while (true)</span>
@@ -77,7 +83,7 @@ Roadmap:
                 </div>
                 <div class="editor editor-wrap col-md-12">
                   <!-- editor contendo processo 2 -->
-                  <center><strong>Processo 2</strong></center>
+                  <center><span id="title-proc-2" class="ui ui-title">Processo 2</span></center>
 <pre id="editor-2">
 <code class="c">
 <span class="line"><span>0</span>  while (true)</span>
@@ -115,9 +121,6 @@ Roadmap:
 
         var cedit = {
           // code editor
-          l_color: {
-            last_assgined: '',
-          },
           c_line_el: [null, null],
           root_el: [$('#editor-1'), $('#editor-2')],
 
@@ -130,14 +133,6 @@ Roadmap:
             cur_lo = $(cedit.root_el[root_id]).find('span:nth-child(' + (line_no + 1) + ')');
             cur_lo.addClass('line-cur');
             this.c_line_el[root_id] = cur_lo;
-          },
-          set_line_color: function(root_id, color_class){
-            var c_line_el = this.c_line_el[root_id];
-            if (c_line_el != null){
-              c_line_el.removeClass(this.l_color.last_assgined);
-              c_line_el.addClass(color_class);
-            }
-
           }
         }
 
@@ -145,7 +140,7 @@ Roadmap:
           cur_proc: 0,
           proc_vars: [
             {i: 0, j: 1},
-            {i: 1, j: 0},
+            {i: 1, j: 0}
           ],
           flag: [false, false],
           turn: 0,
@@ -159,8 +154,9 @@ Roadmap:
           },
           set_flag: function(id, val){
             alg.flag[id] = val;
-            $('#var-flag-' + id).text(
-              val ? 'true' : 'false'
+            $('#var-flag-' + id).html(
+              val ? '<span class="kw kw-true">true</span>' : 
+                '<span class="kw kw-false">false</span>'
             );
           },
           get_var: function(var_name){
@@ -209,6 +205,8 @@ Roadmap:
             {cur_lno: -1},
             {cur_lno: -1}
           ],
+          pre_step_jobs: [],
+          last_proc: null,
           cur_proc: 0,
           cur_ed: null,
           line_count: 15,
@@ -217,6 +215,11 @@ Roadmap:
           step: function(){
 
             var cur_lno = (smac.proc_mem[smac.cur_proc].cur_lno + 1) % smac.line_count;
+
+            for (job_idx in smac.pre_step_jobs){
+              smac.pre_step_jobs[job_idx]();
+            }
+            smac.pre_step_jobs = [];
 
             cedit.set_current_line(smac.cur_proc, cur_lno);
             smac.proc_mem[smac.cur_proc].cur_lno = cur_lno;
@@ -231,21 +234,37 @@ Roadmap:
               if (Math.random() > 0.5){
                 // will activate quantumm
                 alg.cur_proc = smac.cur_proc = 1 - smac.cur_proc;
+                smac.pre_step_jobs.push(function(){
+                  smac.set_current_proc(smac.cur_proc);
+                });
               }
             }            
           },
           jump: function(line){
             smac.proc_mem[smac.cur_proc].cur_lno = line - 1;
           },
-          color: function(c){
-            cedit.set_line_color(smac.cur_proc, c);
-          },
           init: function(){
+            smac.set_current_proc(smac.cur_proc);
             if (! smac.stepped){
               smac.step();
             }
             alg.engine = smac;
             alg.set_turn(alg.turn);
+          },
+          set_current_proc: function(id){
+            if (smac.last_proc != null){
+              $('#title-proc-' + (smac.last_proc+1)).removeClass('active');
+            }
+            $('#title-proc-' + (id+1)).addClass('active');
+            smac.last_proc = id;
+
+            $('div.editor.editor-wrap pre').each(function(){
+              if ($(this).attr('id').indexOf('-' + (id+1)) >= 0){
+                $(this).removeClass('paused');
+              } else {
+                $(this).addClass('paused');
+              }
+            });
           }
         }
 
