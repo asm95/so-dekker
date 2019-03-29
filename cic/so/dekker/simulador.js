@@ -206,6 +206,7 @@ $(document).ready(function(){
       $('#btn-step-wrap').on('click', function(){
         if (! smac.stepped){
           ui.on_step_change();
+          return; // avoid double stepping
         }
         smac.step();
       });
@@ -220,7 +221,7 @@ $(document).ready(function(){
     }
   }
 
-  // our machine's memory card
+  // machine's memory card
   var memc = {
       schemes: {
         alg: {
@@ -281,11 +282,30 @@ $(document).ready(function(){
 
       },
       init: function(){
+        $('#sec-mem').removeClass('hidden');
         $('#btn-dump').on('click', memc.peform_dump);
         $('#btn-restore').on('click', memc.peform_restore);
       }
   }
 
+
+  var breakpoint = {
+
+    init: function(){
+      var bp_class = 'editor editor-breakpoint';
+      $('pre code.c span.line').each(function(){
+        bp_el = $('<span class="' +bp_class+ '">&nbsp;</span>');
+        $(this)
+          .prepend(bp_el);
+        bp_el.on('click', function(){
+          $(bp_el).addClass('enabled');
+        });
+      });
+
+    }
+  }
+
+  // provides config. UI
   var conf = {
     set_exec_speed: function(){
       spd = parseInt($(this).val());
@@ -299,15 +319,13 @@ $(document).ready(function(){
     init: function(){
       $('#ip-exec-vel')
         .on('keyup', conf.set_exec_speed)
-        .val('501');
+        .val(smac.exec_speed);
     }
   }
 
-
-  cedit.init();
-  smac.init();
-  ui.init();
-  memc.init();
-  conf.init();
+  var enabled_mods = [cedit,smac,ui,memc, conf, breakpoint];
+  for (mod_id in enabled_mods){
+    enabled_mods[mod_id].init();
+  }
 
 });

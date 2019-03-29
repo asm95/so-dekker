@@ -6,7 +6,7 @@ gulp.task('compress', function () {
   return gulp.src('simulador.js')
     .pipe( uglify({mangle:{properties:{keep_quoted: true, reserved: [
         'ready', 'addClass', 'removeClass', 'each', 'text', 'val', 'on', 'attr', 'html',
-            'extend',
+            'extend', 'prepend',
         'stringify', 'parse',
         'highlightBlock',
         ]}}}) )

@@ -26,6 +26,11 @@ Roadmap:
       span.kw.kw-true {color: green;}
       span.kw.kw-false {color: red;}
 
+      span.editor.editor-breakpoint {padding-right: 1em;}
+      span.editor.editor-breakpoint.enabled {
+        background: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTcgMTciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIj48dGl0bGU+MTI0MzwvdGl0bGU+PGRlZnMgY2xhc3M9InNpLWdseXBoLWZpbGwiPjwvZGVmcz48ZyBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGFzcz0ic2ktZ2x5cGgtZmlsbCI+PGNpcmNsZSBmaWxsPSIjNDM0MzQzIiBjeD0iOSIgY3k9IjkiIHI9IjgiIGNsYXNzPSJzaS1nbHlwaC1maWxsIj48L2NpcmNsZT48L2c+PC9zdmc+");
+      }
+
       @media (max-width: 720px) {
         #btn-ui-expand {display: none;}
       }
@@ -135,19 +140,21 @@ Roadmap:
                   </div>
                 </li>
               </ul>
-              <h4>Memória</h4>
-              <div class="form-group">
-                <textarea id="ta-dump" class="form-control"></textarea>
-                <span class="help-block">
-                  <p>É possível salvar um estado de máquina para utilizar mais tarde</p>
-                  <p id="ui-mem-err-msg" style="color: red;"></p>
-                </span>
-              </div>
-              <div class="form-group">
-                <center>
-                  <button id="btn-dump" class="btn btn-default"><span class="glyphicon glyphicon-download"></span>Dump</button>
-                  <button id="btn-restore" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span>Restaurar</button>
-                </center>
+              <div id="sec-mem" class="sec hidden">
+                <h4>Memória</h4>
+                <div class="form-group">
+                  <textarea id="ta-dump" class="form-control" style="resize: vertical;"></textarea>
+                  <span class="help-block">
+                    <p>É possível salvar um estado de máquina para utilizar mais tarde</p>
+                    <p id="ui-mem-err-msg" style="color: red;"></p>
+                  </span>
+                </div>
+                <div class="form-group">
+                  <center>
+                    <button id="btn-dump" class="btn btn-default"><span class="glyphicon glyphicon-download"></span>Dump</button>
+                    <button id="btn-restore" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span>Restaurar</button>
+                  </center>
+                </div>
               </div>
               <!-- <h4>Sobre</h4> -->
             </div>
