@@ -14,7 +14,14 @@ $(document).ready(function(){
       }
       cur_lo = $(cedit.root_el[root_id]).find('span:nth-child(' + (line_no + 1) + ')');
       cur_lo.addClass('line-cur');
+      // hack #1
+      cur_lo.removeClass('line-paused');
+      // end hack
       this.c_line_el[root_id] = cur_lo;
+
+      // hack #1
+      return cur_lo;
+      // end hack
     },
     init: function(){
       // for each code wrapper, call highlight.js
@@ -116,6 +123,14 @@ $(document).ready(function(){
       if (Math.random() > 0.5){
           smac.cur_proc = 1 - smac.cur_proc;
           smac.pre_step_jobs.push(function(){
+            // hack #1 main
+            // war 2019-03-29: hack, we should introduce this on step, not in round robin
+            // ahead jump line to avoid confusion
+            // this hack broke restore
+            // we cant step properly
+            var cur_line_el = cedit.set_current_line(1 - smac.cur_proc, smac.proc_mem[1-smac.cur_proc].cur_lno+1);
+            cur_line_el.addClass('line-paused');
+            // end hack
             smac.set_current_proc(smac.cur_proc);
           });
       }
