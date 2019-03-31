@@ -37,6 +37,9 @@ Roadmap:
       @media (max-width: 720px) {
         #btn-ui-expand {display: none;}
       }
+      @media (pointer:none), (pointer:coarse) {
+        div.btn-choises span {margin: 0.2em 0.83em;}
+      }
     </style>
   </head>
   <body>
@@ -61,7 +64,7 @@ Roadmap:
                 </tr>
               </table>
               <div class="col-md-12">
-                <div class="row">
+                <div class="row btn-choises" style="margin-bottom: 1em;">
                   <div id="btn-quantm-wrap">
                     <span class="pull-right">
                       <button class="btn btn-info">Quantum</button>
