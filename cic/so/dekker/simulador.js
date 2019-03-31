@@ -110,15 +110,15 @@ $(document).ready(function(){
     stepped: false,
     exec_speed: 500,
 
-    step_round_robin: function(){
+    step_round_robin: function(is_quantumm){
       /*
         will simulate round robin behaviour where
-        at each line of the algorithm the quantumm time
+        at each line of the algorithm the quantum time
         can expire and cause the process to context switch,
         therefore sleep one process and bringing another one
         to live
       */
-      if (Math.random() > 0.5){
+      if (is_quantumm){
         var old_proc = smac.cur_proc;
         smac.pre_step_jobs.push(function(){
         var next_line = smac.set_current_line(old_proc, smac.find_next_line(old_proc)-1);
@@ -167,8 +167,8 @@ $(document).ready(function(){
           setTimeout(smac.step, 0);
       } else {
         alg[cur_lno]();
-        smac.step_round_robin();
         if (! smac.stepped){
+          smac.step_round_robin(Math.random() > 0.5);
           setTimeout(smac.step, smac.exec_speed);
         }
       }            
@@ -231,16 +231,21 @@ $(document).ready(function(){
         smac.stepped = ! smac.stepped;
 
     },
+    on_step_click: function(){
+      if (! smac.stepped){
+        ui.on_step_change();
+        return; // avoid double stepping
+      }
+      smac.step();
+    },
     init: function(){
       // bind btn click
       $('#btn-ui-expand').on('click', ui.on_expand_click);
 
-      $('#btn-step-wrap').on('click', function(){
-        if (! smac.stepped){
-          ui.on_step_change();
-          return; // avoid double stepping
-        }
-        smac.step();
+      $('#btn-step-wrap').on('click', ui.on_step_click);
+      $('#btn-quantm-wrap').on('click', function(){
+        smac.step_round_robin(true);
+        ui.on_step_click();
       });
       $('#btn-auto-wrap').on('click', function(){
         ui.on_step_change();
