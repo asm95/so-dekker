@@ -95,9 +95,9 @@ $(document).ready(function(){
     },
     init: function(){
       // init all memory variables
-      alg.set_flag(0, alg.flag[0]);
-      alg.set_flag(1, alg.flag[1]);
-      alg.set_turn(alg.turn);
+      alg.set_flag(0, false);
+      alg.set_flag(1, false);
+      alg.set_turn(0);
     }
   }
 
@@ -199,6 +199,7 @@ $(document).ready(function(){
         smac.proc_mem[pid] = {cur_lno: -1};
         cedit.set_current_line(pid, -1);
       }
+      smac.cur_proc = 0;
       smac.set_current_proc(smac.cur_proc);
       alg.init();
     },
