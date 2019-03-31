@@ -5,23 +5,20 @@ $(document).ready(function(){
 
     c_line_el: [null, null],
     root_el: [$('#editor-1'), $('#editor-2')],
+    line_states: {cur: 'line-cur', paused:'line-paused'},
 
     set_current_line: function(root_id, line_no){
       var c_line_el = this.c_line_el[root_id];
       if (c_line_el != null){
-        $(c_line_el).removeClass('line-cur');
+        $(c_line_el).removeClass(cedit.line_states.cur);
 
       }
       cur_lo = $(cedit.root_el[root_id]).find('span:nth-child(' + (line_no + 1) + ')');
-      cur_lo.addClass('line-cur');
-      // hack #1
-      cur_lo.removeClass('line-paused');
-      // end hack
+      cur_lo.addClass(cedit.line_states.cur);
+      cur_lo.removeClass(cedit.line_states.paused);
       this.c_line_el[root_id] = cur_lo;
 
-      // hack #1
       return cur_lo;
-      // end hack
     },
     init: function(){
       // for each code wrapper, call highlight.js
@@ -83,6 +80,7 @@ $(document).ready(function(){
     },
     8: function(){
       alg.set_flag(alg.get_var('i'), true);
+      alg.engine.jump(3);
     },
     11: function(){
     },
@@ -121,31 +119,49 @@ $(document).ready(function(){
         to live
       */
       if (Math.random() > 0.5){
-          smac.cur_proc = 1 - smac.cur_proc;
-          smac.pre_step_jobs.push(function(){
-            // hack #1 main
-            // war 2019-03-29: hack, we should introduce this on step, not in round robin
-            // ahead jump line to avoid confusion
-            // this hack broke restore
-            // we cant step properly
-            var cur_line_el = cedit.set_current_line(1 - smac.cur_proc, smac.proc_mem[1-smac.cur_proc].cur_lno+1);
-            cur_line_el.addClass('line-paused');
-            // end hack
-            smac.set_current_proc(smac.cur_proc);
-          });
+        var old_proc = smac.cur_proc;
+        smac.pre_step_jobs.push(function(){
+        var next_line = smac.set_current_line(old_proc, smac.find_next_line(old_proc)-1);
+        // UI is pointing to the line that will be executed
+        // but step but be one line before to the next to be executed line.
+        smac.cur_proc = 1 - smac.cur_proc;
+        var cur_line_el = cedit.set_current_line(old_proc, next_line+1);
+        cur_line_el.addClass('line-paused');
+        smac.set_current_proc(smac.cur_proc);
+        });
       }
     },
+    get_current_line: function(proc_id){
+        return smac.proc_mem[proc_id].cur_lno;
+    },
+    get_next_line: function(line_no){
+        return (line_no + 1) % smac.line_count;
+    },
+    find_next_line: function(proc_id){
+        // will skip non-functional lines
+        cur_line = smac.get_next_line(smac.get_current_line(proc_id));
+        while(1){
+            if (alg[cur_line] != undefined){
+                break;
+            }
+            cur_line = smac.get_next_line(cur_line);
+        }
+        return cur_line;
+    },
+    set_current_line: function(proc_id, line_id){
+        smac.proc_mem[proc_id].cur_lno = line_id;
+        return line_id;
+    },
     step: function(){
-
-      var cur_lno = (smac.proc_mem[smac.cur_proc].cur_lno + 1) % smac.line_count;
-
       for (job_idx in smac.pre_step_jobs){
         smac.pre_step_jobs[job_idx]();
       }
       smac.pre_step_jobs = [];
 
+      var cur_lno = smac.get_next_line(smac.get_current_line(smac.cur_proc));
+
       cedit.set_current_line(smac.cur_proc, cur_lno);
-      smac.proc_mem[smac.cur_proc].cur_lno = cur_lno;
+      smac.set_current_line(smac.cur_proc, cur_lno);
 
       if (alg[cur_lno] == undefined){
           setTimeout(smac.step, 0);
@@ -204,11 +220,12 @@ $(document).ready(function(){
     },
 
     on_step_change: function(){
-        // @ui.auto.exclude
+        // @ui.auto.toggle
+        var wrap_btn_sel = '#btn-auto-wrap button';
         if (smac.stepped){
-          $('#btn-auto-wrap button').attr('disabled', '');
+          $(wrap_btn_sel).attr('disabled', '');
         } else {
-          $('#btn-auto-wrap button').removeAttr('disabled');
+          $(wrap_btn_sel).removeAttr('disabled');
         }
 
         smac.stepped = ! smac.stepped;
@@ -274,6 +291,17 @@ $(document).ready(function(){
         }, null, 2);
         $('#ta-dump').val(dump_str);              
       },
+      restore_lines: function(){
+        // restore editor lines
+        for (var proc_id = 0; proc_id < 2; proc_id++){
+            var cur_lno = smac.proc_mem[proc_id].cur_lno;
+            cedit.set_current_line(proc_id, cur_lno);
+            if (proc_id != smac.cur_proc){
+                cur_line_el = cedit.set_current_line(proc_id, cur_lno+1);
+                cur_line_el.addClass('line-paused');
+            }
+        }
+      },
       peform_restore: function(){
         $('#ui-mem-err-msg').text('');
 
@@ -289,9 +317,7 @@ $(document).ready(function(){
         memc.collect_data(alg);
         memc.collect_data(smac);
 
-        // restore editor lines
-        cedit.set_current_line(0, smac.proc_mem[0].cur_lno);
-        cedit.set_current_line(1, smac.proc_mem[1].cur_lno);
+        memc.restore_lines();
         // restore active editor and variables
         smac.init();
 
@@ -313,7 +339,7 @@ $(document).ready(function(){
         $(this)
           .prepend(bp_el);
         bp_el.on('click', function(){
-          $(bp_el).addClass('enabled');
+          $(this).toggleClass('enabled');
         });
       });
 
@@ -322,13 +348,14 @@ $(document).ready(function(){
 
   // provides config. UI
   var conf = {
+    min_exec_speed: 100,
+
     set_exec_speed: function(){
       spd = parseInt($(this).val());
-      if ( isNaN(spd) || spd < 100){
+      if ( isNaN(spd) || spd < conf.min_exec_speed){
         return;
       }
 
-      console.log('set ' + spd);
       smac.exec_speed = spd;
     },
     init: function(){
