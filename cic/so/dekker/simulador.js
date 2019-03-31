@@ -110,7 +110,7 @@ $(document).ready(function(){
     last_proc: null,
     "cur_proc": 0,
     line_count: 15,
-    stepped: false,
+    stepped: true,
     exec_speed: 500,
 
     step_round_robin: function(is_quantumm){
@@ -212,24 +212,36 @@ $(document).ready(function(){
   // UI outside editor
   var ui = {
     is_expanded: false,
+    is_help_active: false,
 
     on_expand_click: function(){
-    if (ui.is_expanded){
-      $('div.editor.editor-wrap').each(function(){
-        $(this).removeClass('col-md-6');
-        $(this).addClass('col-md-12');
-      });
-      $('#content-main-window').attr('class', 'col-md-6 col-md-offset-3');
-    } else {
-      $('div.editor.editor-wrap').each(function(){
-        $(this).removeClass('col-md-12');
-        $(this).addClass('col-md-6');
-      });
-      $('#content-main-window').attr('class', 'col-md-12');  
-    }
-    ui.is_expanded = ! ui.is_expanded;
+      if (ui.is_expanded){
+        $('div.editor.editor-wrap').each(function(){
+          $(this).removeClass('col-md-6');
+          $(this).addClass('col-md-12');
+        });
+        $('#content-main-window').attr('class', 'col-md-6 col-md-offset-3');
+      } else {
+        $('div.editor.editor-wrap').each(function(){
+          $(this).removeClass('col-md-12');
+          $(this).addClass('col-md-6');
+        });
+        $('#content-main-window').attr('class', 'col-md-12');  
+      }
+      ui.is_expanded = ! ui.is_expanded;
     },
 
+    on_help_click: function(){
+      // @future.warning: this will conflict if sections are hidden by other scripts
+      $('div.sec').each(function(){
+        var is_target = ($(this).attr('id') == 'sec-about');
+        // the boolean expression below simulate a xor (A xor B is equivalent to A != B)
+        // you can learn more about this @ http://www.howtocreate.co.uk/xor.html
+        var jqfun = (ui.is_help_active != is_target) ? 'removeClass' : 'addClass';
+        $(this)[jqfun]('hidden');
+      });
+      ui.is_help_active = !ui.is_help_active;
+    },
     on_step_change: function(){
         // @ui.auto.toggle
         var wrap_btn_sel = '#btn-auto-wrap button';
@@ -250,25 +262,21 @@ $(document).ready(function(){
       smac.step();
     },
     init: function(){
-      // bind btn click
       $('#btn-ui-expand').on('click', ui.on_expand_click);
+      $('#btn-ui-help').on('click', ui.on_help_click);
+      $('#btn-help-back').on('click', ui.on_help_click);
 
+      $('#btn-reset-wrap').on('click', smac.reset);
+      $('#btn-auto-wrap').on('click', function(){
+        ui.on_step_change();
+        smac.step();
+      });
       $('#btn-step-wrap').on('click', ui.on_step_click);
       $('#btn-quantm-wrap').on('click', function(){
         smac.step_round_robin(true);
         ui.on_step_click();
       });
-      $('#btn-auto-wrap').on('click', function(){
-        ui.on_step_change();
-        smac.step();
-      });
-      $('#btn-reset-wrap').on('click', function(){
-        smac.reset();
-      });
 
-      if (! smac.stepped){
-        ui.on_step_change();
-      }
     }
   }
 

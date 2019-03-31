@@ -18,27 +18,42 @@ Roadmap:
     <link rel="stylesheet" href="static/highlight/styles/idea.css">
 
     <style>
+      /* margin on top of the page */
       div.content-main {margin: 1em 0em 0em 0em;}
+      /* colors when a line is highlighted */
       span.line.line-cur {background-color: #fcfc92;}
       span.line.line-cur.info {background-color: #84ffea;}
       span.line.line-cur.line-paused {background-color: #d4d6d8;}
+      /* turn the panel's title bold when a specific editor panel is currently running */
       span.ui.ui-title.active {font-weight: bold;}
       div.editor.editor-wrap pre.paused {opacity: 0.75;}
       span.kw.kw-true {color: green;}
       span.kw.kw-false {color: red;}
 
       span.editor.editor-breakpoint {padding-right: 0.8em; margin-right: 0.3em;}
+      /* fine rounded circle svg encoded a base64 */
       span.editor.editor-breakpoint.enabled {
         background: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTcgMTciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIj48dGl0bGU+MTI0MzwvdGl0bGU+PGRlZnMgY2xhc3M9InNpLWdseXBoLWZpbGwiPjwvZGVmcz48ZyBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGFzcz0ic2ktZ2x5cGgtZmlsbCI+PGNpcmNsZSBmaWxsPSIjNDM0MzQzIiBjeD0iOSIgY3k9IjkiIHI9IjgiIGNsYXNzPSJzaS1nbHlwaC1maWxsIj48L2NpcmNsZT48L2c+PC9zdmc+");
         background-position: center;
         background-repeat: no-repeat;
       }
 
+      /* smaller buttons on help menu */
+      .btn-sm {line-height: 1.2;}
+      /* avoid buttons to be merged in the list */
+      ul.opts-list li {margin-bottom: 0.3em;}
+
+      /* mobile devices can't activate side-by-side view */
       @media (max-width: 720px) {
         #btn-ui-expand {display: none;}
       }
+      /* touch based devices will have more spacing between buttons */
       @media (pointer:none), (pointer:coarse) {
         div.btn-choises span {margin: 0.2em 0.83em;}
+      }
+
+      #sec-controls span:not(:first-child) {
+        margin-right: 0.9em;
       }
     </style>
   </head>
@@ -48,50 +63,61 @@ Roadmap:
         <div id="content-main-window" class="col-md-6 col-md-offset-3">
           <div class="panel panel-default">
             <div class="panel-body">
-              <span id="btn-ui-expand" class="pull-right glyphicon glyphicon-resize-full"></span>
-              <h3>Algoritmo de Dekker</h3>
-              <h4>Tabela de Variáveis</h4>
-              <table class="table">
-                <tr>
-                  <th style="width: 50%">Variável</th>
-                  <th style="width: 50%">Valor</th>
-                </tr>
-                <tr>
-                  <td>flag</td><td>[ <span id="var-flag-0"></span> , <span id="var-flag-1"></span> ]</td>
-                </tr>
-                <tr>
-                  <td>vez</td><td id="var-turn"></td>
-                </tr>
-              </table>
-              <div class="col-md-12">
-                <div class="row btn-choises" style="margin-bottom: 1em;">
-                  <div id="btn-quantm-wrap">
-                    <span class="pull-right">
-                      <button class="btn btn-info">Quantum</button>
-                    </span>
-                  </div>
-                  <div id="btn-step-wrap">
-                    <span class="pull-right">
-                      <button class="btn btn-success">Step</button>
-                    </span>
-                  </div>
-                  <div id="btn-auto-wrap">
-                    <span class="pull-right">
-                      <button class="btn btn-warning">Auto</button>
-                    </span>
-                  </div>
-                  <div id="btn-reset-wrap">
-                    <span class="pull-right">
-                      <button class="btn btn-danger">Reset</button>
-                    </span>
+              <div id="sec-controls">
+                <span id="btn-ui-expand" class="pull-right glyphicon glyphicon-resize-full"></span>
+                <span id="btn-ui-help" class="pull-right glyphicon glyphicon-question-sign"></span>
+              </div>
+              <div id="sec-header">
+                <h3>Algoritmo de Dekker</h3>
+              </div>
+              <div id="sec-vt" class="sec">
+                <h4>Tabela de Variáveis</h4>
+                <table class="table">
+                  <tr>
+                    <th style="width: 50%">Variável</th>
+                    <th style="width: 50%">Valor</th>
+                  </tr>
+                  <tr>
+                    <td>flag</td><td>[ <span id="var-flag-0"></span> , <span id="var-flag-1"></span> ]</td>
+                  </tr>
+                  <tr>
+                    <td>vez</td><td id="var-turn"></td>
+                  </tr>
+                </table>
+              </div>
+              <!--@ui.sec.editor-panel-controls -->
+              <div id="sec-epc" class="sec">
+                <div class="col-md-12">
+                  <div class="row btn-choises" style="margin-bottom: 1em;">
+                    <div id="btn-quantm-wrap">
+                      <span class="pull-right">
+                        <button class="btn btn-info">Quantum</button>
+                      </span>
+                    </div>
+                    <div id="btn-step-wrap">
+                      <span class="pull-right">
+                        <button class="btn btn-success">Step</button>
+                      </span>
+                    </div>
+                    <div id="btn-auto-wrap">
+                      <span class="pull-right">
+                        <button class="btn btn-warning">Auto</button>
+                      </span>
+                    </div>
+                    <div id="btn-reset-wrap">
+                      <span class="pull-right">
+                        <button class="btn btn-danger">Reset</button>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <!-- editor contendo processo 1 -->
-              <div class="row">
-                <div class="editor editor-wrap col-md-12">
-                  <center><span id="title-proc-1" class="ui ui-title">Processo 1</span></center>
-                  <pre id="editor-1">
+              <div id="sec-epm" class="sec">
+                <div class="row">
+                  <div class="editor editor-wrap col-md-12">
+                    <center><span id="title-proc-1" class="ui ui-title">Processo 1</span></center>
+                    <pre id="editor-1">
+                    <!-- editor contendo processo 1 -->
 <code class="c">
 <span class="line"><span>0</span>  while (true)</span>
 <span class="line"><span>1</span>  {</span>
@@ -108,13 +134,13 @@ Roadmap:
 <span class="line"><span>12</span>      vez = j;</span>
 <span class="line"><span>13</span>      flag[i] = false;</span>
 <span class="line"><span>14</span>  }</span>
-                  </code>
-                </pre>
-                </div>
-                <div class="editor editor-wrap col-md-12">
-                  <!-- editor contendo processo 2 -->
+</code>
+                    </pre>                   
+                  </div>
+                  <div class="editor editor-wrap col-md-12">
                   <center><span id="title-proc-2" class="ui ui-title">Processo 2</span></center>
-<pre id="editor-2">
+                    <pre id="editor-2">
+                    <!-- editor contendo processo 2 -->
 <code class="c">
 <span class="line"><span>0</span>  while (true)</span>
 <span class="line"><span>1</span>  {</span>
@@ -131,33 +157,33 @@ Roadmap:
 <span class="line"><span>12</span>      vez = j;</span>
 <span class="line"><span>13</span>      flag[i] = false;</span>
 <span class="line"><span>14</span>  }</span>
-                  </code>
-                </pre>
+</code>
+                    </pre>
+                  </div>
                 </div>
               </div>
-              <!-- summary -->
-              <ul id="summary">
-              </ul>
-              <h4>Configurações</h4>
-              <ul class="list-group">
-                <li class="list-group-item">
-                  <div class="form-group">
-                    <label>Velocidade de Execução (ms)</label>
-                    <input id="ip-exec-vel" type="number" class="form-control" value="" placeholder="(mínimo 100 ms)">
-                  </div>
-                </li>
-                <!-- @future.feature
-                <li class="list-group-item">
-                  <div class="form-group">
-                    <label>Tipo de Execução</label>
-                    <select class="form-control">
-                      <option value="">Monoprocessado</option>
-                      <option value="" disabled>Multiprocessado</option>
-                    </select>
-                  </div>
-                </li>
-                -->
-              </ul>
+              <div id="sec-conf" class="sec">
+                <h4>Configurações</h4>
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <div class="form-group">
+                      <label>Velocidade de Execução (ms)</label>
+                      <input id="ip-exec-vel" type="number" class="form-control" value="" placeholder="(mínimo 100 ms)">
+                    </div>
+                  </li>
+                  <!-- @future.feature
+                  <li class="list-group-item">
+                    <div class="form-group">
+                      <label>Tipo de Execução</label>
+                      <select class="form-control">
+                        <option value="">Monoprocessado</option>
+                        <option value="" disabled>Multiprocessado</option>
+                      </select>
+                    </div>
+                  </li>
+                  -->
+                </ul>
+              </div>
               <div id="sec-mem" class="sec hidden">
                 <h4>Memória</h4>
                 <div class="form-group">
@@ -174,7 +200,25 @@ Roadmap:
                   </center>
                 </div>
               </div>
-              <!-- <h4>Sobre</h4> -->
+              <div id="sec-about" class="sec hidden">
+                <h4>Sobre</h4>
+                <div class="col-md-10 col-md-offset-1">
+                  <p>O Algoritmo de Dekker é a primeira solução correta de exclusão mútua na programação concorrente. Este permite que duas linhas de execução compartilhem um recurso de uso exclusivo, sendo necessário somente uma área de memória compartilhada para as variáveis <code>flag</code> e <code>vez</code>.</p>
+                  <p>O simulador possui a vantagem de permitir o usuário verificar o comportamento do algoritmo em todos os cenários onde o quantum possa ocorrer. O objetivo final é de que você se convença de que os dois processos nunca estarão na região crítica ao mesmo tempo.</p>
+                  <p>O código fonte está disponível <a href="">neste</a> repositório do GitHub. Com isso podem ficar tranquilos porque ninguém está minerando <i>bitcoin</i> na máquina de vocês! Nele também poderás encontrar detalhes a respeito da implementação.</p>
+                  <strong>Uso</strong>
+                  <ul class="opts-list">
+                    <li><button class="btn btn-danger btn-sm disabled">Reset</button> redefine as variáveis para os valores originais e retorna para a primeira linha nos dois processos</li>
+                    <li><button class="btn btn-warning btn-sm disabled">Auto</button> realiza a simulação automaticamente executando a uma velocidade de <span><span id="helptext-exec-spd">2 linhas</span> por segundo</span>. Note que o quantum pode ser ativado randomicamente a cada linha executada neste modo.</li>
+                    <li><button class="btn btn-success btn-sm disabled">Step</button> avança uma linha no processo corrente sem ativar o quantum</li>
+                    <li><button class="btn btn-info btn-sm disabled">Quantum</button> avança uma linha no processo que está inativo ao ativar o quantum</li>
+                  </ul>
+                  <center><button id="btn-help-back" class="btn btn-info"><span class="glyphicon glyphicon-circle-arrow-left" style="margin-right: 0.4em;"></span>Voltar</button></center>
+                  <div class="sec-about-footer" style="margin-top: 1em; text-align: right;">
+                    <p><i>Versão 0.13.0-b</i></p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
