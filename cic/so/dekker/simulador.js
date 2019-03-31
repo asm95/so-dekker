@@ -25,9 +25,11 @@ $(document).ready(function(){
     },
     init: function(){
       // for each code wrapper, call highlight.js
-      $('pre code.c').each(function(){
-        hljs.highlightBlock(this);
-      });
+      if (typeof hljs === undefined){
+          $('pre code.c').each(function(){
+            hljs.highlightBlock(this);
+          });
+      }
     }
   }
 

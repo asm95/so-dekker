@@ -15,7 +15,7 @@ Roadmap:
     <title>Alg. Dekker</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="static/highlight/styles/idea.css">
+    <link rel="stylesheet" origin="local" href="{{css_idea}}">
 
     <style>
       /* margin on top of the page */
@@ -37,6 +37,7 @@ Roadmap:
         background-position: center;
         background-repeat: no-repeat;
       }
+      span.ln {margin-right: 0.5em;}
 
       /* smaller buttons on help menu */
       .btn-sm {line-height: 1.2;}
@@ -52,8 +53,17 @@ Roadmap:
         div.btn-choises span {margin: 0.2em 0.83em;}
       }
 
+      /* spacing between top icons */
       #sec-controls span:not(:first-child) {
         margin-right: 0.9em;
+      }
+      /* editor will use space efficiently */
+      pre {
+        padding: 0; border-radius: 1px;
+      }
+      /* make editor standout */
+      .hljs {
+        background: #f7f8f9;
       }
     </style>
   </head>
@@ -116,49 +126,11 @@ Roadmap:
                 <div class="row">
                   <div class="editor editor-wrap col-md-12">
                     <center><span id="title-proc-1" class="ui ui-title">Processo 1</span></center>
-                    <pre id="editor-1">
-                    <!-- editor contendo processo 1 -->
-<code class="c">
-<span class="line"><span>0</span>  while (true)</span>
-<span class="line"><span>1</span>  {</span>
-<span class="line"><span>2</span>      flag[i] = true;</span>
-<span class="line"><span>3</span>      while (flag[j] != false)</span>
-<span class="line"><span>4</span>      {</span>
-<span class="line"><span>5</span>          if (vez == j) {</span>
-<span class="line"><span>6</span>              flag[i] = false;</span>
-<span class="line"><span>7</span>              while (vez == j){ }</span>
-<span class="line"><span>8</span>              flag[i] = true;</span>
-<span class="line"><span>9</span>          }</span>
-<span class="line"><span>10</span>      }</span>
-<span class="line info"><span>11</span>      secao_critica();</span>
-<span class="line"><span>12</span>      vez = j;</span>
-<span class="line"><span>13</span>      flag[i] = false;</span>
-<span class="line"><span>14</span>  }</span>
-</code>
-                    </pre>                   
+                    <pre id="editor-1">{% include "dekker.html" %}</pre>
                   </div>
                   <div class="editor editor-wrap col-md-12">
                   <center><span id="title-proc-2" class="ui ui-title">Processo 2</span></center>
-                    <pre id="editor-2">
-                    <!-- editor contendo processo 2 -->
-<code class="c">
-<span class="line"><span>0</span>  while (true)</span>
-<span class="line"><span>1</span>  {</span>
-<span class="line"><span>2</span>      flag[i] = true;</span>
-<span class="line"><span>3</span>      while (flag[j] != false)</span>
-<span class="line"><span>4</span>      {</span>
-<span class="line"><span>5</span>          if (vez == j) {</span>
-<span class="line"><span>6</span>              flag[i] = false;</span>
-<span class="line"><span>7</span>              while (vez == j){ }</span>
-<span class="line"><span>8</span>              flag[i] = true;</span>
-<span class="line"><span>9</span>          }</span>
-<span class="line"><span>10</span>      }</span>
-<span class="line info"><span>11</span>      secao_critica();</span>
-<span class="line"><span>12</span>      vez = j;</span>
-<span class="line"><span>13</span>      flag[i] = false;</span>
-<span class="line"><span>14</span>  }</span>
-</code>
-                    </pre>
+                    <pre id="editor-2">{% include "dekker.html" %}</pre>
                   </div>
                 </div>
               </div>
@@ -205,7 +177,7 @@ Roadmap:
                 <div class="col-md-10 col-md-offset-1">
                   <p>O Algoritmo de Dekker é a primeira solução correta de exclusão mútua na programação concorrente. Este permite que duas linhas de execução compartilhem um recurso de uso exclusivo, sendo necessário somente uma área de memória compartilhada para as variáveis <code>flag</code> e <code>vez</code>.</p>
                   <p>O simulador possui a vantagem de permitir o usuário verificar o comportamento do algoritmo em todos os cenários onde o quantum possa ocorrer. O objetivo final é de que você se convença de que os dois processos nunca estarão na região crítica ao mesmo tempo.</p>
-                  <p>O código fonte está disponível <a href="">neste</a> repositório do GitHub. Com isso podem ficar tranquilos porque ninguém está minerando <i>bitcoin</i> na máquina de vocês! Nele também poderás encontrar detalhes a respeito da implementação.</p>
+                  <p>O código fonte está disponível <a href="">neste</a> repositório do GitHub. Com isso, podem ficar tranquilos porque ninguém está minerando <i>bitcoin</i> na máquina de vocês! Nele também poderás encontrar detalhes a respeito da implementação.</p>
                   <strong>Uso</strong>
                   <ul class="opts-list">
                     <li><button class="btn btn-danger btn-sm disabled">Reset</button> redefine as variáveis para os valores originais e retorna para a primeira linha nos dois processos</li>
@@ -215,7 +187,7 @@ Roadmap:
                   </ul>
                   <center><button id="btn-help-back" class="btn btn-info"><span class="glyphicon glyphicon-circle-arrow-left" style="margin-right: 0.4em;"></span>Voltar</button></center>
                   <div class="sec-about-footer" style="margin-top: 1em; text-align: right;">
-                    <p><i>Versão 0.13.0-b</i></p>
+                    <p><i>Versão {{app_ver}}</i></p>
                   </div>
                 </div>
               </div>
@@ -226,7 +198,9 @@ Roadmap:
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="static/highlight/highlight.pack.js"></script>
-    <script src="simulador.js"></script>
+    {% if inc_highlight_js %}
+      <script src="{{js_highlight}}"></script>
+    {% endif %}
+    <script src="{{js_simulador}}"></script>
   </body>
 </html>

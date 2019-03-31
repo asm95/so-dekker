@@ -1,0 +1,17 @@
+<code class="c hljs cpp">
+<span class="line"><span class=""><span class="hljs-number ln">0</span></span><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)</span>
+<span class="line"><span class=""><span class="hljs-number ln">1</span></span>{</span>
+<span class="line"><span class=""><span class="hljs-number ln">2</span></span>    flag[i] = <span class="hljs-literal">true</span>;</span>
+<span class="line"><span class=""><span class="hljs-number ln">3</span></span>    <span class="hljs-keyword">while</span> (flag[j] != <span class="hljs-literal">false</span>)</span>
+<span class="line"><span class=""><span class="hljs-number ln">4</span></span>    {</span>
+<span class="line"><span class=""><span class="hljs-number ln">5</span></span>        <span class="hljs-keyword">if</span> (vez == j) {</span>
+<span class="line"><span class=""><span class="hljs-number ln">6</span></span>            flag[i] = <span class="hljs-literal">false</span>;</span>
+<span class="line"><span class=""><span class="hljs-number ln">7</span></span>            <span class="hljs-keyword">while</span> (vez == j){ }</span>
+<span class="line"><span class=""><span class="hljs-number ln">8</span></span>            flag[i] = <span class="hljs-literal">true</span>;</span>
+<span class="line"><span class=""><span class="hljs-number ln">9</span></span>        }</span>
+<span class="line"><span class=""><span class="hljs-number ln">10</span></span>    }</span>
+<span class="line info"><span class=""><span class="hljs-number ln">11</span></span>    secao_critica();</span>
+<span class="line"><span class=""><span class="hljs-number ln">12</span></span>    vez = j;</span>
+<span class="line"><span class=""><span class="hljs-number ln">13</span></span>    flag[i] = <span class="hljs-literal">false</span>;</span>
+<span class="line"><span class=""><span class="hljs-number ln">14</span></span>}</span>
+</code>
