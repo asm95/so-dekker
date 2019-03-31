@@ -13,6 +13,9 @@ $(document).ready(function(){
         $(c_line_el).removeClass(cedit.line_states.cur);
 
       }
+      if (line_no < 0){
+        return;
+      }
       cur_lo = $(cedit.root_el[root_id]).find('span:nth-child(' + (line_no + 1) + ')');
       cur_lo.addClass(cedit.line_states.cur);
       cur_lo.removeClass(cedit.line_states.paused);
@@ -174,7 +177,7 @@ $(document).ready(function(){
       }            
     },
     jump: function(line){
-      smac.proc_mem[smac.cur_proc].cur_lno = line - 1;
+      smac.set_current_line(smac.cur_proc, line - 1);
     },
     set_current_proc: function(id){
       if (smac.last_proc != null){
@@ -191,10 +194,17 @@ $(document).ready(function(){
         } 
       });
     },
-    init: function(){
+    reset: function(){
+      for (var pid = 0; pid < 2; pid++){
+        smac.proc_mem[pid] = {cur_lno: -1};
+        cedit.set_current_line(pid, -1);
+      }
       smac.set_current_proc(smac.cur_proc);
-      alg.engine = smac;
       alg.init();
+    },
+    init: function(){
+      alg.engine = smac;
+      smac.reset();
     }
   }
 
@@ -251,12 +261,16 @@ $(document).ready(function(){
         ui.on_step_change();
         smac.step();
       });
+      $('#btn-reset-wrap').on('click', function(){
+        smac.reset();
+      });
 
       if (! smac.stepped){
         ui.on_step_change();
       }
     }
   }
+
 
   // machine's memory card
   var memc = {
